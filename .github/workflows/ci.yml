@@ -15,8 +15,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-        lfs: true
-    
+        
     - name: List directory contents
       run: |
         pwd
@@ -30,14 +29,12 @@ jobs:
         
     - name: Restore dependencies
       shell: bash
-      run: |
-        chmod +x ./Health\&Med.sln
-        dotnet restore "./Health\&Med.sln"
+      run: dotnet restore "./Health&Med/Health&Med.sln"
       
     - name: Build
       shell: bash
-      run: dotnet build "./Health\&Med.sln" --no-restore
+      run: dotnet build "./Health&Med/Health&Med.sln" --no-restore
       
     - name: Test
       shell: bash
-      run: dotnet test "./Health\&Med.sln" --no-build --verbosity normal
+      run: dotnet test "./Health&Med/Health&Med.sln" --no-build --verbosity normal
