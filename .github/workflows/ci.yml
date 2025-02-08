@@ -19,10 +19,10 @@ jobs:
         dotnet-version: '8.0.x'
         
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore Health&Med.sln
       
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build Health&Med.sln --no-restore
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test Health&Med.sln --no-build --verbosity normal
