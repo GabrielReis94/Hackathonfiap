@@ -13,16 +13,22 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: List directory contents
+      run: ls -la
+      
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
         
     - name: Restore dependencies
-      run: dotnet restore "./Health&Med.sln"
+      working-directory: .
+      run: dotnet restore "Health&Med.sln"
       
     - name: Build
-      run: dotnet build "./Health&Med.sln" --no-restore
+      working-directory: .
+      run: dotnet build "Health&Med.sln" --no-restore
       
     - name: Test
-      run: dotnet test "./Health&Med.sln" --no-build --verbosity normal
+      working-directory: .
+      run: dotnet test "Health&Med.sln" --no-build --verbosity normal
