@@ -1,0 +1,55 @@
+name: .NET CD
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Stop .NET processes
+      shell: powershell
+      run: |
+        taskkill /F /IM dotnet.exe /T
+        Stop-Service -Name "w3svc" -Force -ErrorAction SilentlyContinue
+      continue-on-error: true
+      
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+        include-prerelease: true
+      env:
+        DOTNET_INSTALL_DIR: 'C:\Program Files\dotnet'
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
+        
+    - name: Wait for processes to stop
+      shell: powershell
+      run: Start-Sleep -Seconds 10
+        
+    - name: Restore dependencies
+      run: dotnet restore "./Health&Med/Health&Med.sln"
+      
+    - name: Build
+      run: dotnet build "./Health&Med/Health&Med.sln" --configuration Release --no-restore
+      
+    - name: Publish
+      run: dotnet publish "./Health&Med/Health&Med.sln" -c Release --no-build -o ./publish
+      
+    - name: Deploy to local machine
+      shell: cmd
+      run: |
+        IF NOT EXIST "C:\Deploy\Health&Med" mkdir "C:\Deploy\Health&Med"
+        xcopy /Y /E ".\publish\*" "C:\Deploy\Health&Med\"
+        
+    - name: Start IIS
+      shell: powershell
+      run: |
+        Start-Service -Name "w3svc"
+      continue-on-error: true
